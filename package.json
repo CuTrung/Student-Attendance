@@ -1,0 +1,19 @@
+{
+  "name": "student-attendance-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CuTrung/student-attendance-backend.git"
+  },
+  "author": "Dev-ke-ban-nghe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CuTrung/student-attendance-backend/issues"
+  },
+  "homepage": "https://github.com/CuTrung/student-attendance-backend#readme"
+}
