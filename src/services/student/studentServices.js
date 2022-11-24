@@ -106,8 +106,7 @@ const getStudentsWithPagination = async (page, limit, time) => {
     try {
         let offset = (page - 1) * limit;
         let { count, rows } = await db.Student.findAndCountAll({
-            where: { isDeleted: 0 },
-            attributes: ['fullName', 'email', 'password'],
+            attributes: ['fullName', 'email', 'password', 'isDeleted'],
             include: [
                 {
                     model: db.SchoolYear,
@@ -165,11 +164,22 @@ const createANewStudent = async (student) => {
 
 }
 
-const deleteAStudent = async (emailDelete) => {
+const deleteAStudent = async (student) => {
     try {
-        await db.Student.update({ isDeleted: 1 }, {
+        if (student.isDeleted) {
+            await db.Student.update({ isDeleted: +student.isDeleted }, {
+                where: {
+                    email: student.email
+                }
+            })
+
+            return apiUtils.resFormat(0, `${+student.isDeleted === 0 ? 'Active' : 'Inactive'} a student successful !`);
+        }
+
+        // Delete khỏi database
+        await db.Student.destroy({
             where: {
-                email: emailDelete
+                email: student.email
             }
         })
 

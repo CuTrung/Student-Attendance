@@ -43,7 +43,119 @@ const getMajorsById = async (majorId) => {
     }
 }
 
+const getMajorsWithPagination = async (page, limit, time) => {
+    try {
+        let offset = (page - 1) * limit;
+        let { count, rows } = await db.Major.findAndCountAll({
+            // where: { isClosed: 0 },
+            attributes: ['id', 'name', 'description', 'isClosed'],
+            include: [
+                {
+                    model: db.Department,
+                    attributes: ['id', 'description'],
+                }
+            ],
+            limit: limit,
+            offset: offset,
+            raw: true,
+            nest: true
+        })
+
+        let totalPages = Math.ceil(count / limit);
+        let data = {
+            totalRows: count,
+            totalPages: totalPages,
+            majors: rows
+        }
+
+        if (time)
+            await apiUtils.delay(time);
+
+        if (rows.length > 0)
+            return apiUtils.resFormat(0, "Get majors with pagination successful !", data);
+
+        return apiUtils.resFormat(1, "Get majors with pagination failed !", data);
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+const createANewMajor = async (major) => {
+    try {
+        await db.Major.create({
+            name: major.name,
+            description: major.description,
+            isClosed: 0,
+            majorId: major.majorId
+        })
+
+        return apiUtils.resFormat(0, "Create a new major successful !");
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+const createManyMajors = async (listMajors) => {
+    try {
+        listMajors = listMajors.map(major => ({ ...major, isClosed: 0 }))
+        let majors = await db.Major.bulkCreate(listMajors);
+        return apiUtils.resFormat(0, `Create ${majors.length} majors successful !`);
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+const updateAMajor = async (majorUpdate) => {
+    try {
+        await db.Major.update({
+            name: majorUpdate.name,
+            description: majorUpdate.description,
+            majorId: majorUpdate.majorId
+        }, {
+            where: {
+                id: majorUpdate.id
+            }
+        })
+
+        return apiUtils.resFormat(0, "Update a major successful !");
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+const deleteAMajor = async (major) => {
+    try {
+        if (major.isClosed) {
+            await db.Major.update({ isClosed: +major.isClosed }, {
+                where: {
+                    id: major.id
+                }
+            })
+
+            return apiUtils.resFormat(0, `${+major.isClosed === 0 ? 'Open' : 'Close'} a major successful !`);
+        }
+
+        // Delete khỏi database
+        await db.Major.destroy({
+            where: {
+                id: major.id
+            }
+        })
+
+        return apiUtils.resFormat(0, "Delete a major successful !");
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
 
 export default {
-    getAllMajors, getMajorsById
+    getAllMajors, getMajorsById,
+    getMajorsWithPagination, createANewMajor, updateAMajor,
+    deleteAMajor, createManyMajors
 }

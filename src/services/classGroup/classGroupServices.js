@@ -2,20 +2,20 @@ import db from "../../models";
 import apiUtils from "../../utils/apiUtils";
 import { Op } from "sequelize";
 
-// const getAllClassGroups = async () => {
-//     try {
-//         let data = await db.Major.findAll({
-//             where: { isClosed: 0 },
-//             attributes: ['id', 'name', 'description'],
-//             raw: true,
-//         })
+const getAllClassGroups = async () => {
+    try {
+        let data = await db.ClassGroup.findAll({
+            where: { isClosed: 0 },
+            attributes: ['id', 'name', 'description'],
+            raw: true,
+        })
 
-//         return apiUtils.resFormat(0, "Get all Major successful !", data);
-//     } catch (error) {
-//         console.log(error);
-//         return apiUtils.resFormat();
-//     }
-// }
+        return apiUtils.resFormat(0, "Get all Major successful !", data);
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
 
 
 
@@ -43,6 +43,6 @@ const getClassGroupBySubjectId = async (subjectId) => {
 }
 
 export default {
-    // getAllClassGroups,
+    getAllClassGroups,
     getClassGroupBySubjectId
 }

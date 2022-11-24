@@ -1,4 +1,4 @@
-import teacherServices from "../services/teachers/teacherServices";
+import teacherServices from "../services/teacher/teacherServices";
 import apiUtils from '../utils/apiUtils';
 
 const getTeachers = async (req, res) => {

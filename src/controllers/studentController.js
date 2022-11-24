@@ -75,8 +75,7 @@ const createANewStudent = async (req, res) => {
 
 const deleteAStudent = async (req, res) => {
     try {
-        let data = await studentServices.deleteAStudent(req.body.email);
-
+        let data = await studentServices.deleteAStudent(req.body);
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
                 EC: data.EC,

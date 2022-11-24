@@ -17,9 +17,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ClassGroup.init({
-    name: DataTypes.STRING,
     subjectId: DataTypes.STRING,
-    isClosed: DataTypes.INTEGER
+    registrationGroupId: DataTypes.STRING,
+    teacherId: DataTypes.STRING,
+    schoolYearId: DataTypes.STRING,
+    isClosed: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'ClassGroup',

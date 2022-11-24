@@ -9,10 +9,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
+      subjectId: {
         type: Sequelize.STRING
       },
-      subjectId: {
+      registrationGroupId: {
+        type: Sequelize.STRING
+      },
+      teacherId: {
+        type: Sequelize.STRING
+      },
+      schoolYearId: {
         type: Sequelize.STRING
       },
       isClosed: {

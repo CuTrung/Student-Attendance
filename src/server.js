@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import staticFiles from './config/staticFiles';
 import allowCORS from './config/allowCORS';
 import cookieParser from 'cookie-parser';
-import teacherServices from './services/teachers/teacherServices';
+import teacherServices from './services/teacher/teacherServices';
 const app = express();
 dotenv.config();
 
@@ -23,10 +23,10 @@ staticFiles(app);
 
 initRoutes(app);
 
-const run = async () => {
-    let data = await teacherServices.getAllTeachers();
-}
-run();
+// const run = async () => {
+//     let data = await teacherServices.getAllTeachers();
+// }
+// run();
 
 
 app.listen(port, () => {

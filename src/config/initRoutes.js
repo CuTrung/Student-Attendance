@@ -7,6 +7,7 @@ import majorController from '../controllers/majorController';
 import loginController from '../controllers/loginController';
 import attendanceController from '../controllers/attendanceController';
 import teacherController from '../controllers/teacherController';
+import departmentController from '../controllers/departmentController';
 
 
 const initRoutes = (app) => {
@@ -25,8 +26,6 @@ const initRoutes = (app) => {
     // API SchoolYear
     router.get("/api/school-years", schoolYearController.getAllSchoolYears);
 
-    // API Major
-    router.get("/api/majors", majorController.getAllMajors);
 
     // API Login
     router.post("/api/login", loginController.login);
@@ -36,7 +35,18 @@ const initRoutes = (app) => {
 
     // API Manage
 
+    // API Departments
+    router.get("/api/departments", departmentController.getDepartments);
+    router.post("/api/departments", departmentController.createANewDepartment);
+    router.patch("/api/departments", departmentController.updateADepartment);
+    router.delete("/api/departments", departmentController.deleteADepartment);
 
+    // API Major
+    router.get("/api/majors", majorController.getMajors);
+    // router.post("/api/majors", majorController.createANewMajor);
+    router.post("/api/majors", majorController.createManyMajors);
+    router.patch("/api/majors", majorController.updateAMajor);
+    router.delete("/api/majors", majorController.deleteAMajor);
 
 
 
