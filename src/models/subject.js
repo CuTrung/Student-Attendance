@@ -11,14 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Subject.belongsToMany(models.Major, { through: 'Major_Subject', foreignKey: 'subjectId' });
       Subject.hasMany(models.ClassGroup);
+      Subject.belongsToMany(models.RegistrationGroup, { through: 'ClassGroup', foreignKey: 'subjectId' });
+
+
     }
   }
   Subject.init({
     name: DataTypes.STRING,
     description: DataTypes.STRING,
-    majorId: DataTypes.STRING,
-    teacherId: DataTypes.STRING,
     isClosed: DataTypes.INTEGER,
   }, {
     sequelize,

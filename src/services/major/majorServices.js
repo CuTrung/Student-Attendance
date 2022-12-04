@@ -113,7 +113,7 @@ const updateAMajor = async (majorUpdate) => {
         await db.Major.update({
             name: majorUpdate.name,
             description: majorUpdate.description,
-            majorId: majorUpdate.majorId
+            departmentId: majorUpdate.departmentId
         }, {
             where: {
                 id: majorUpdate.id
@@ -140,6 +140,13 @@ const deleteAMajor = async (major) => {
         }
 
         // Delete khỏi database
+        // Về sau cần xem xét sự ảnh hưởng đối với table Student
+        await db.Major_Subject.destroy({
+            where: {
+                majorId: major.id
+            }
+        })
+
         await db.Major.destroy({
             where: {
                 id: major.id

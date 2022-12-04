@@ -1,12 +1,13 @@
-import teacherServices from "../services/teacher/teacherServices";
-import apiUtils from '../utils/apiUtils';
+import classGroupServices from "../services/classGroup/classGroupServices";
+import apiUtils from "../utils/apiUtils";
 
-const getTeachers = async (req, res) => {
+
+const getClassGroups = async (req, res) => {
     try {
         if (req.query && req.query.page) {
             let page = +req.query.page;
             let limit = +req.query.limit;
-            let data = await teacherServices.getTeachersWithPagination(page, limit, +req.query?.delay);
+            let data = await classGroupServices.getClassGroupsWithPagination(page, limit, +req.query?.delay);
             if (data.EC === 0 || data.EC === 1) {
                 return res.status(200).json({
                     EC: data.EC,
@@ -21,7 +22,7 @@ const getTeachers = async (req, res) => {
                 DT: data.DT
             })
         } else {
-            let data = await teacherServices.getAllTeachers();
+            let data = await classGroupServices.getAllClassGroups();
             if (data.EC === 0 || data.EC === 1) {
                 return res.status(200).json({
                     EC: data.EC,
@@ -46,13 +47,35 @@ const getTeachers = async (req, res) => {
 
 }
 
-const createANewTeacher = async (req, res) => {
+const getClassGroupByTeacherId = async (req, res) => {
     try {
-        let isExistEmail = await teacherServices.getTeacherByEmail(req.body.email);
-        if (isExistEmail.DT) {
-            return res.status(200).json(apiUtils.resFormat(1, "Email is exist, can't create"));
+        let data = await classGroupServices.getClassGroupByTeacherId(req.params.teacherId);
+
+        if (data.EC === 0 || data.EC === 1) {
+            return res.status(200).json({
+                EC: data.EC,
+                EM: data.EM,
+                DT: data.DT
+            })
         }
-        let data = await teacherServices.createANewTeacher(req.body);
+
+        return res.status(500).json({
+            EC: data.EC,
+            EM: data.EM,
+            DT: data.DT
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(apiUtils.resFormat());
+    }
+
+
+}
+
+const createANewClassGroup = async (req, res) => {
+    try {
+        let data = await classGroupServices.createANewClassGroup(req.body)
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
                 EC: data.EC,
@@ -73,9 +96,55 @@ const createANewTeacher = async (req, res) => {
     }
 }
 
-const deleteATeacher = async (req, res) => {
+const createManyClassGroups = async (req, res) => {
     try {
-        let data = await teacherServices.deleteATeacher(req.body);
+        let data = await classGroupServices.createManyClassGroups(req.body)
+        if (data.EC === 0 || data.EC === 1) {
+            return res.status(200).json({
+                EC: data.EC,
+                EM: data.EM,
+                DT: data.DT
+            })
+        }
+
+        return res.status(500).json({
+            EC: data.EC,
+            EM: data.EM,
+            DT: data.DT
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(apiUtils.resFormat());
+    }
+}
+
+const updateAClassGroup = async (req, res) => {
+    try {
+        let data = await classGroupServices.updateAClassGroup(req.body);
+        if (data.EC === 0 || data.EC === 1) {
+            return res.status(200).json({
+                EC: data.EC,
+                EM: data.EM,
+                DT: data.DT
+            })
+        }
+
+        return res.status(500).json({
+            EC: data.EC,
+            EM: data.EM,
+            DT: data.DT
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(apiUtils.resFormat());
+    }
+}
+
+const deleteAClassGroup = async (req, res) => {
+    try {
+        let data = await classGroupServices.deleteAClassGroup(req.body);
 
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
@@ -97,14 +166,10 @@ const deleteATeacher = async (req, res) => {
     }
 }
 
-const updateATeacher = async (req, res) => {
+const updateTimelineOrActiveAClassGroup = async (req, res) => {
     try {
-        let isExistEmail = await teacherServices.getTeacherByEmail(req.body.email);
-        if (isExistEmail.DT) {
-            return res.status(200).json(apiUtils.resFormat(1, "Email is exist, can't update"));
-        }
+        let data = await classGroupServices.updateTimelineOrActiveAClassGroup(req.body);
 
-        let data = await teacherServices.updateATeacher(req.body);
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
                 EC: data.EC,
@@ -125,9 +190,10 @@ const updateATeacher = async (req, res) => {
     }
 }
 
-const getTeacherByEmail = async (req, res) => {
+const getClassGroupVirtualByClassGroupId = async (req, res) => {
     try {
-        let data = await teacherServices.getTeacherByEmail(req.body.email);
+        let data = await classGroupServices.getClassGroupVirtualByClassGroupId(req.body.classGroupId);
+
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
                 EC: data.EC,
@@ -146,10 +212,15 @@ const getTeacherByEmail = async (req, res) => {
         console.log(error);
         return res.status(500).json(apiUtils.resFormat());
     }
+
+
 }
+
+
 
 
 export default {
-    getTeachers, createANewTeacher, deleteATeacher, updateATeacher,
-    getTeacherByEmail
+    getClassGroups, createANewClassGroup, updateAClassGroup,
+    deleteAClassGroup, createManyClassGroups, getClassGroupByTeacherId,
+    updateTimelineOrActiveAClassGroup, getClassGroupVirtualByClassGroupId
 }

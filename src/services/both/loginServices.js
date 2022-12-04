@@ -48,6 +48,8 @@ const login = async (user) => {
 
         if (!isEmailStartsWithNumber) {
             // TEACHER
+
+
             let isExistTeacher = await teacherServices.getTeacherByEmail(user.email);
             if (isExistTeacher.DT) {
                 let teacher = isExistTeacher.DT;

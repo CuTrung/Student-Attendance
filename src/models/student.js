@@ -12,10 +12,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Student.belongsTo(models.Major, { foreignKey: 'majorId' });
-      Student.belongsToMany(models.ClassGroup, { through: 'Student_ClassGroup', foreignKey: 'studentId' });
       Student.belongsTo(models.SchoolYear, { foreignKey: 'schoolYearId' });
-      Student.hasOne(models.SpecialStudents);
+      Student.hasMany(models.SpecialStudents);
       Student.belongsTo(models.Group, { foreignKey: 'groupId' });
+      // Student.belongsToMany(models.ClassGroup, { through: 'Student_ClassGroup', targetKey: 'id' });
+
+      Student.hasMany(models.Student_ClassGroup);
     }
   }
   Student.init({
@@ -25,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
     isDeleted: DataTypes.INTEGER,
     majorId: DataTypes.STRING,
     schoolYearId: DataTypes.STRING,
+    numberOfAbsences: DataTypes.STRING,
+    numberOfTimesBeingLate: DataTypes.STRING,
+    numberOfLies: DataTypes.STRING,
     groupId: DataTypes.STRING,
   }, {
     sequelize,

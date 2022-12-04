@@ -11,40 +11,12 @@ dotenv.config();
 
 const getAllTeachers = async () => {
     try {
-        // let dataTeachers = await db.Teacher.findAll({
-        //     where: { isDeleted: 0 },
-        //     attributes: ['id', 'fullName', 'email', 'password'],
-        //     raw: true,
-        //     nest: true
-        // })
-
-        let dataTeachers = await db.Teacher.findAll({
-            where: { isDeleted: 0 },
-            attributes: ['id', 'fullName', 'email', 'password'],
+        let data = await db.Teacher.findAll({
+            // where: { isDeleted: 0 },
+            attributes: ['id', 'fullName', 'email', 'password', 'isDeleted'],
             raw: true,
             nest: true
         })
-
-
-        let data;
-        if (dataTeachers.length > 0) {
-            data = await Promise.all(dataTeachers.map(async (teacher) => {
-                let dataSubject = await subjectServices.getSubjectByTeacherId(teacher.id);
-                let subject = await Promise.all(dataSubject.DT.map(async (item) => {
-                    let dataClassGroup = await classGroupServices.getClassGroupBySubjectId(item.id)
-                    return {
-                        id: item.id,
-                        name: item.name,
-                        classGroup: dataClassGroup.DT
-                    };
-                }))
-
-                return {
-                    ...teacher,
-                    subject
-                };
-            }))
-        }
 
 
         if (data.length > 0)
@@ -103,8 +75,8 @@ const getTeachersWithPagination = async (page, limit, time) => {
     try {
         let offset = (page - 1) * limit;
         let { count, rows } = await db.Teacher.findAndCountAll({
-            where: { isDeleted: 0 },
-            attributes: ['id', 'fullName', 'email', 'password'],
+            // where: { isDeleted: 0 },
+            attributes: ['id', 'fullName', 'email', 'password', 'isDeleted'],
             limit: limit,
             offset: offset,
             raw: true,
@@ -112,35 +84,11 @@ const getTeachersWithPagination = async (page, limit, time) => {
         })
 
 
-        let dataTeachers = rows;
-
-        let teachers;
-        // Func dưới đang chạy có hiện tượng async, cần improve
-        if (dataTeachers.length > 0) {
-            teachers = await Promise.all(dataTeachers.map(async (teacher) => {
-                let dataSubject = await subjectServices.getSubjectByTeacherId(teacher.id);
-                let subject = await Promise.all(dataSubject.DT.map(async (item) => {
-                    let dataClassGroup = await classGroupServices.getClassGroupBySubjectId(item.id)
-                    return {
-                        id: item.id,
-                        name: item.name,
-                        description: item.description,
-                        classGroup: dataClassGroup.DT
-                    };
-                }))
-
-                return {
-                    ...teacher,
-                    subject
-                };
-            }))
-        }
-
         let totalPages = Math.ceil(count / limit);
         let data = {
             totalRows: count,
             totalPages: totalPages,
-            teachers
+            teachers: rows
         }
 
         if (time)
@@ -176,11 +124,22 @@ const createANewTeacher = async (teacher) => {
 
 }
 
-const deleteATeacher = async (emailDelete) => {
+const deleteATeacher = async (teacher) => {
     try {
-        await db.Teacher.update({ isDeleted: 1 }, {
+        if (teacher.isDeleted) {
+            await db.Teacher.update({ isDeleted: +teacher.isDeleted }, {
+                where: {
+                    email: teacher.email
+                }
+            })
+
+            return apiUtils.resFormat(0, `${+teacher.isDeleted === 0 ? 'Active' : 'Inactive'} a teacher successful !`);
+        }
+
+        // Delete khỏi database
+        await db.Teacher.destroy({
             where: {
-                email: emailDelete
+                email: teacher.email
             }
         })
 

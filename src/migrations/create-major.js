@@ -30,7 +30,14 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    // await queryInterface.addConstraint('Major', {
+    //   fields: ['name', 'description'],
+    //   type: 'unique',
+    //   name: 'major_unique'
+    // });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Major');
   }

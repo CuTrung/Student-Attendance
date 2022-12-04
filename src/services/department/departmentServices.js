@@ -99,6 +99,8 @@ const deleteADepartment = async (department) => {
         }
 
         // Delete khỏi database
+        // Trước khi xóa Department cần update departmentId 
+        // của toàn bộ major đang reference đến Department đó  
         await db.Department.destroy({
             where: {
                 id: department.id

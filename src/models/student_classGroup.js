@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Student_ClassGroup.belongsTo(models.Student);
+      Student_ClassGroup.belongsTo(models.ClassGroup);
     }
   }
   Student_ClassGroup.init({

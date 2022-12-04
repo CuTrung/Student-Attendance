@@ -33,6 +33,9 @@ module.exports = {
       numberOfTimesBeingLate: {
         type: Sequelize.STRING
       },
+      numberOfLies: {
+        type: Sequelize.STRING
+      },
       groupId: {
         type: Sequelize.STRING
       },

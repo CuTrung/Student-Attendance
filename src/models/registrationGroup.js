@@ -11,11 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      RegistrationGroup.hasMany(models.ClassGroup)
+      RegistrationGroup.belongsToMany(models.Subject, { through: 'ClassGroup', foreignKey: 'registrationGroupId' });
+
     }
   }
   RegistrationGroup.init({
     name: DataTypes.STRING,
     description: DataTypes.STRING,
+    isClosed: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'RegistrationGroup',

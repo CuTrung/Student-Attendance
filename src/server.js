@@ -1,5 +1,5 @@
 import express from 'express';
-import initRoutes from './config/initRoutes';
+import initRoutes from './routes/initRoutes';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import staticFiles from './config/staticFiles';

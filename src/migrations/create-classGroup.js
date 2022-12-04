@@ -21,6 +21,15 @@ module.exports = {
       schoolYearId: {
         type: Sequelize.STRING
       },
+      showCode: {
+        type: Sequelize.STRING
+      },
+      timeline: {
+        type: Sequelize.STRING
+      },
+      isActive: {
+        type: Sequelize.INTEGER
+      },
       isClosed: {
         type: Sequelize.INTEGER
       },

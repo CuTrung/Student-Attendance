@@ -9,7 +9,7 @@ const getAllStudents = async () => {
     try {
         let data = await db.Student.findAll({
             where: { isDeleted: 0 },
-            attributes: ['fullName', 'email', 'password'],
+            attributes: ['id', 'fullName', 'email', 'password'],
             include: [
                 {
                     model: db.SchoolYear,

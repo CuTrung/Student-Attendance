@@ -9,6 +9,7 @@ const attendance = async (studentId, showId, status = 'BEFORE') => {
         // cần tìm cách improve
         let student = await studentServices.getStudentById(studentId);
 
+
         if (student.DT) {
             let dataClassGroupIds = await db.Student_ClassGroup.findAll({
                 where: { studentId },
@@ -31,7 +32,7 @@ const attendance = async (studentId, showId, status = 'BEFORE') => {
 
                 // Student is study this classGroup
                 if (dataClassGroupId) {
-                    if (classGroupIds.includes(dataClassGroupId.classGroupId)) {
+                    if (classGroupIds.includes(+dataClassGroupId.classGroupId)) {
                         await db.Student_ClassGroupVirtual.create({
                             studentId,
                             classGroupId: dataClassGroupId.classGroupId,

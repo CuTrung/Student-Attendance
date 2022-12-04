@@ -15,12 +15,6 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      majorId: {
-        type: Sequelize.STRING
-      },
-      teacherId: {
-        type: Sequelize.STRING
-      },
       isClosed: {
         type: Sequelize.INTEGER
       },

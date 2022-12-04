@@ -1,12 +1,13 @@
-import teacherServices from "../services/teacher/teacherServices";
-import apiUtils from '../utils/apiUtils';
+import registrationGroupServices from "../services/registrationGroup/registrationGroupServices";
+import apiUtils from "../utils/apiUtils";
 
-const getTeachers = async (req, res) => {
+
+const getRegistrationGroups = async (req, res) => {
     try {
         if (req.query && req.query.page) {
             let page = +req.query.page;
             let limit = +req.query.limit;
-            let data = await teacherServices.getTeachersWithPagination(page, limit, +req.query?.delay);
+            let data = await registrationGroupServices.getRegistrationGroupsWithPagination(page, limit, +req.query?.delay);
             if (data.EC === 0 || data.EC === 1) {
                 return res.status(200).json({
                     EC: data.EC,
@@ -21,7 +22,7 @@ const getTeachers = async (req, res) => {
                 DT: data.DT
             })
         } else {
-            let data = await teacherServices.getAllTeachers();
+            let data = await registrationGroupServices.getAllRegistrationGroups();
             if (data.EC === 0 || data.EC === 1) {
                 return res.status(200).json({
                     EC: data.EC,
@@ -46,13 +47,10 @@ const getTeachers = async (req, res) => {
 
 }
 
-const createANewTeacher = async (req, res) => {
+
+const createANewRegistrationGroup = async (req, res) => {
     try {
-        let isExistEmail = await teacherServices.getTeacherByEmail(req.body.email);
-        if (isExistEmail.DT) {
-            return res.status(200).json(apiUtils.resFormat(1, "Email is exist, can't create"));
-        }
-        let data = await teacherServices.createANewTeacher(req.body);
+        let data = await registrationGroupServices.createANewRegistrationGroup(req.body)
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
                 EC: data.EC,
@@ -73,9 +71,33 @@ const createANewTeacher = async (req, res) => {
     }
 }
 
-const deleteATeacher = async (req, res) => {
+
+const updateARegistrationGroup = async (req, res) => {
     try {
-        let data = await teacherServices.deleteATeacher(req.body);
+        let data = await registrationGroupServices.updateARegistrationGroup(req.body);
+        if (data.EC === 0 || data.EC === 1) {
+            return res.status(200).json({
+                EC: data.EC,
+                EM: data.EM,
+                DT: data.DT
+            })
+        }
+
+        return res.status(500).json({
+            EC: data.EC,
+            EM: data.EM,
+            DT: data.DT
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(apiUtils.resFormat());
+    }
+}
+
+const deleteARegistrationGroup = async (req, res) => {
+    try {
+        let data = await registrationGroupServices.deleteARegistrationGroup(req.body);
 
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
@@ -97,59 +119,8 @@ const deleteATeacher = async (req, res) => {
     }
 }
 
-const updateATeacher = async (req, res) => {
-    try {
-        let isExistEmail = await teacherServices.getTeacherByEmail(req.body.email);
-        if (isExistEmail.DT) {
-            return res.status(200).json(apiUtils.resFormat(1, "Email is exist, can't update"));
-        }
-
-        let data = await teacherServices.updateATeacher(req.body);
-        if (data.EC === 0 || data.EC === 1) {
-            return res.status(200).json({
-                EC: data.EC,
-                EM: data.EM,
-                DT: data.DT
-            })
-        }
-
-        return res.status(500).json({
-            EC: data.EC,
-            EM: data.EM,
-            DT: data.DT
-        })
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(apiUtils.resFormat());
-    }
-}
-
-const getTeacherByEmail = async (req, res) => {
-    try {
-        let data = await teacherServices.getTeacherByEmail(req.body.email);
-        if (data.EC === 0 || data.EC === 1) {
-            return res.status(200).json({
-                EC: data.EC,
-                EM: data.EM,
-                DT: data.DT
-            })
-        }
-
-        return res.status(500).json({
-            EC: data.EC,
-            EM: data.EM,
-            DT: data.DT
-        })
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(apiUtils.resFormat());
-    }
-}
 
 
 export default {
-    getTeachers, createANewTeacher, deleteATeacher, updateATeacher,
-    getTeacherByEmail
+    getRegistrationGroups, createANewRegistrationGroup, updateARegistrationGroup, deleteARegistrationGroup
 }
