@@ -190,9 +190,9 @@ const updateTimelineOrActiveAClassGroup = async (req, res) => {
     }
 }
 
-const getClassGroupVirtualByClassGroupId = async (req, res) => {
+const updateLimitStudentsClassGroup = async (req, res) => {
     try {
-        let data = await classGroupServices.getClassGroupVirtualByClassGroupId(req.body.classGroupId);
+        let data = await classGroupServices.updateLimitStudentsClassGroup(req.params);
 
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
@@ -212,9 +212,9 @@ const getClassGroupVirtualByClassGroupId = async (req, res) => {
         console.log(error);
         return res.status(500).json(apiUtils.resFormat());
     }
-
-
 }
+
+
 
 
 
@@ -222,5 +222,5 @@ const getClassGroupVirtualByClassGroupId = async (req, res) => {
 export default {
     getClassGroups, createANewClassGroup, updateAClassGroup,
     deleteAClassGroup, createManyClassGroups, getClassGroupByTeacherId,
-    updateTimelineOrActiveAClassGroup, getClassGroupVirtualByClassGroupId
+    updateTimelineOrActiveAClassGroup, updateLimitStudentsClassGroup
 }

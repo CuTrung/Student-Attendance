@@ -4,13 +4,13 @@ import jwtUtils from '../utils/jwtUtils';
 
 const attendance = async (req, res) => {
     try {
-        let showId = req.body.showId;
         let decoded = jwtUtils.verifyToken(req.cookies.jwt);
+        decoded.showCode = req.body?.showCode;
 
         // Check quyền (urls) 
         // let urls = decoded.urls;
 
-        let data = await attendanceServices.attendance(decoded.id, showId);
+        let data = await attendanceServices.attendance(decoded);
         if (data.EC === 0 || data.EC === 1) {
             return res.status(200).json({
                 EC: data.EC,

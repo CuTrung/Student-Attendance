@@ -27,6 +27,9 @@ module.exports = {
       timeline: {
         type: Sequelize.STRING
       },
+      limitStudents: {
+        type: Sequelize.STRING
+      },
       isActive: {
         type: Sequelize.INTEGER
       },

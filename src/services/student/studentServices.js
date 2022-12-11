@@ -77,7 +77,7 @@ const getStudentById = async (id) => {
                     { id },
                 ]
             },
-            attributes: ['id', 'fullName', 'email', 'password', 'groupId'],
+            attributes: ['id', 'fullName', 'email', 'password', 'groupId',],
             include: [
                 {
                     model: db.SchoolYear,
@@ -214,7 +214,10 @@ const updateAStudent = async (studentUpdate) => {
 
 
 
+
+
 export default {
     getAllStudents, createANewStudent, deleteAStudent, updateAStudent,
-    getStudentsWithPagination, getStudentByEmail, getStudentById
+    getStudentsWithPagination, getStudentByEmail, getStudentById,
+
 }

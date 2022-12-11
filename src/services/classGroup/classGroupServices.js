@@ -303,7 +303,7 @@ const updateTimelineOrActiveAClassGroup = async (classGroup) => {
                 }
             })
 
-            return apiUtils.resFormat(0, `${+classGroup.isActive === 0 ? 'Active' : 'Inactive'} a classGroup successful !`);
+            return apiUtils.resFormat(0, `${+classGroup.isActive === 0 ? 'Inactive' : 'Active'} a classGroup successful !`);
         }
 
         await db.ClassGroup.update({ timeline: classGroup.timeline }, {
@@ -319,40 +319,33 @@ const updateTimelineOrActiveAClassGroup = async (classGroup) => {
     }
 }
 
-const getClassGroupVirtualByClassGroupId = async (classGroupId) => {
+const updateLimitStudentsClassGroup = async (classGroup) => {
     try {
-        let dataVirtual = await db.Student_ClassGroupVirtual.findAll({
-            where: { classGroupId },
-            attributes: ['studentId', 'timeline'],
-            raw: true,
-            nest: true
+        await db.ClassGroup.update({
+            limitStudents: classGroup.limit
+        }, {
+            where: {
+                id: classGroup.id
+            }
         })
 
-        let listClassGroupsVirtual = [];
-        dataVirtual.forEach(item => {
-            // Convert Majors to obj of array
-            item = { ...item, timeline: [item.timeline] }
+        // Active classGroup continue attendance
+        let dataTimeline = await updateTimelineOrActiveAClassGroup(classGroup);
 
-            let match = listClassGroupsVirtual.find(r => r.studentId === item.studentId);
-            if (match) {
-                match.timeline = match.timeline.concat(item.timeline);
-            } else {
-                listClassGroupsVirtual.push(item);
-            }
-        });
+        if (dataTimeline.EC === 0) {
+            return apiUtils.resFormat(0, "Update limit students classGroup successful !");
+        }
 
-        await specialStudentsServices.createSpecialStudents(listClassGroupsVirtual);
+        return apiUtils.resFormat(1, "Update limit students classGroup failed !");
 
-
-        if (data.length > 0)
-            return apiUtils.resFormat(0, "Get Student_ClassGroupVirtual by classGroupId successful !", data);
-
-        return apiUtils.resFormat(1, "Get Student_ClassGroupVirtual by classGroupId failed !", data);
     } catch (error) {
         console.log(error);
         return apiUtils.resFormat();
     }
 }
+
+
+
 
 export default {
     getAllClassGroups,
@@ -360,5 +353,6 @@ export default {
     getClassGroupsWithPagination, createANewClassGroup, updateAClassGroup,
     deleteAClassGroup, createManyClassGroups, getClassGroupById,
     getClassGroupByTeacherId, updateTimelineOrActiveAClassGroup,
-    getClassGroupVirtualByClassGroupId
+    updateLimitStudentsClassGroup
+
 }

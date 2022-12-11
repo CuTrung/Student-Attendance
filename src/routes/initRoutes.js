@@ -16,7 +16,9 @@ const initRoutes = (app) => {
     apiRoutes.classGroupRoutes(router);
     apiRoutes.student_classGroupRoutes(router);
     apiRoutes.manageRoutes(router);
-    apiRoutes.student_classGroupVirtualRoutes(router);
+    apiRoutes.specialStudentsRoutes(router);
+    apiRoutes.attendanceDetailsRoutes(router);
+
 
     return app.use("/", router);
 }

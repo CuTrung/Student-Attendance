@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   SpecialStudents.init({
     studentId: DataTypes.STRING,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    classGroupId: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'SpecialStudents',

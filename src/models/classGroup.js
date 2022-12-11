@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     schoolYearId: DataTypes.STRING,
     showCode: DataTypes.STRING,
     timeline: DataTypes.STRING,
+    limitStudents: DataTypes.STRING,
     isActive: DataTypes.INTEGER,
     isClosed: DataTypes.INTEGER,
   }, {

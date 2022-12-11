@@ -141,6 +141,69 @@ const deleteAStudent_ClassGroup = async (req, res) => {
     }
 }
 
+const getStudent_classGroupVirtualByClassGroupId = async (req, res) => {
+    try {
+
+        if (dataTimeline.EC === 0) {
+            let data = await student_classGroupServices.getStudent_classGroupVirtualByClassGroupId(req.body.id);
+
+            if (data.EC === 0 || data.EC === 1) {
+                return res.status(200).json({
+                    EC: data.EC,
+                    EM: data.EM,
+                    DT: data.DT
+                })
+            }
+
+            return res.status(500).json({
+                EC: data.EC,
+                EM: data.EM,
+                DT: data.DT
+            })
+        }
+
+        return res.status(500).json(apiUtils.resFormat());
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(apiUtils.resFormat());
+    }
+
+
+}
+
+const countStudent_classGroupVirtualByClassGroupId = async (req, res) => {
+    try {
+
+        if (dataTimeline.EC === 0) {
+            let data = await student_classGroupServices.limitStudent_classGroupVirtualByClassGroupId(req.body);
+
+            if (data.EC === 0 || data.EC === 1) {
+                return res.status(200).json({
+                    EC: data.EC,
+                    EM: data.EM,
+                    DT: data.DT
+                })
+            }
+
+            return res.status(500).json({
+                EC: data.EC,
+                EM: data.EM,
+                DT: data.DT
+            })
+        }
+
+        return res.status(500).json(apiUtils.resFormat());
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(apiUtils.resFormat());
+    }
+
+
+}
+
 export default {
-    getStudent_ClassGroups, createANewStudent_ClassGroup, updateAStudent_ClassGroup, deleteAStudent_ClassGroup, createManyStudent_ClassGroups
+    getStudent_ClassGroups, createANewStudent_ClassGroup,
+    updateAStudent_ClassGroup, deleteAStudent_ClassGroup,
+    createManyStudent_ClassGroups, getStudent_classGroupVirtualByClassGroupId,
+    countStudent_classGroupVirtualByClassGroupId
 }

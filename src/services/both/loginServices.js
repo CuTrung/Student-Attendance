@@ -5,7 +5,7 @@ import teacherServices from "../teacher/teacherServices";
 import roleServices from "../role/roleServices";
 import passwordUtils from "../../utils/passwordUtils";
 import jwtUtils from "../../utils/jwtUtils";
-
+import classGroupServices from "../classGroup/classGroupServices";
 import { Op } from "sequelize";
 
 const login = async (user) => {
@@ -31,7 +31,7 @@ const login = async (user) => {
                     // token
                     let token = jwtUtils.createToken({
                         ...dataRoles.DT,
-                        id: student.id
+                        id: student.id,
                     });
 
                     let data = {

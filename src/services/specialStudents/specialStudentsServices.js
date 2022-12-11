@@ -2,76 +2,131 @@ import db from "../../models";
 import apiUtils from "../../utils/apiUtils";
 import classGroupServices from "../classGroup/classGroupServices";
 import { Op } from "sequelize";
+import studentServices from "../student/studentServices";
+import student_classGroupServices from "../student_classGroup/student_classGroupServices";
 
 const createSpecialStudents = async (listClassGroupsVirtual) => {
     try {
+
         if (listClassGroupsVirtual.length > 0) {
-            let lateStudentIds = [];
-            let studentAttendIds = [];
-            let listSpecialStudents = listClassGroupsVirtual.filter((item) => {
-                if (item.timeline.length === 1) {
-                    let status;
+            let listSpecialStudents = listClassGroupsVirtual.map((item) => {
+                let status;
+                let arrBeforeAndLate = ['BEFORE', 'LATE'];
+                let isOnlyBothBeforeAndLate = (arr) => {
+                    return arrBeforeAndLate.every(v => arr.includes(v));
+                }
 
-                    if (item.timeline[0] === 'BEFORE' || item.timeline[0] === 'LATE') {
+                // ['BEFORE'] | ['LATE'] | ['AFTER'] | ['BEFORE', 'LATE']
+                if (item.timeline.length === 1 || isOnlyBothBeforeAndLate(item.timeline)) {
+                    // TH1: Ko điểm danh trước đó mà chỉ điểm danh cuối giờ
+                    // TH2: Chỉ điểm danh đầu giờ, cuối giờ ko điểm danh
+                    // (có thể student ko có mặt tại lớp nên ko biết phải
+                    // điểm danh cuối giờ)
+                    // TH3: Điểm danh ko được vì có student LIE chiếm chỗ
+                    // Mặc định vẫn là LIE | ABSENT, student phải có mặt 
+                    // trực tiếp tại lớp để kiện, sẽ gửi thông báo về
+                    // cho student là đã điểm danh được AFTER chưa
+                    // Lúc này teacher cần điểm danh miệng
 
-                        if (item.timeline[0] === 'BEFORE') {
-                            status = 'LIE | ABSENT';
+                    status = 'LIE | ABSENT';
+                }
 
-                            // Student kiện vì AFTER ko điểm danh được, 
-                            // chắc chắn có student LIE
-                            // (teacher xử lí bằng miệng trong TH ko tồn tại 
-                            // student chỉ có timeline = 'AFTER')
-                        }
+                // ['LATE', 'AFTER'] | ['BEFORE', 'AFTER'] | ['BEFORE', 'LATE', 'AFTER']
+                if (item.timeline.length === 2 || item.timeline.length === 3) {
+                    if (item.timeline.includes('LATE'))
+                        status = 'LATE | ATTEND';
 
-                        if (item.timeline[0] === 'LATE') {
-                            // TH1: student ko có mặt trực tiếp để kiện
-                            status = 'LIE | ABSENT'
+                    // Check status có được gán value trước đó chưa
+                    if (!status)
+                        status = 'ATTEND';
 
+                }
 
-                            // TH2: Student kiện vì ko điểm danh được AFTER 
-                            // => Chắc chắn có student LIE trong studentAttendIds
-                            // vì timeline AFTER lúc này đã có limit
-                            // (teacher xử lí bằng miệng trong TH ko tồn tại 
-                            // student chỉ có timeline = 'AFTER')
-
-                        }
-                    } else {
-                        // Có thể student này lấy mất chỗ của student ở một
-                        // trong hai TH trên. Nếu rơi vào TH này, đồng thời
-                        // có student kiện thì Lúc này cần xác minh student 
-                        // kiện xem có đúng là tồn tại BEFORE hoặc LATE 
-                        // (tức là có điểm danh trước đó), nếu đúng thì 
-                        // insert vào studentAttendIds
-
-                        status = 'ABSENT | LIE';
-                    }
-                    return {
-                        studentId: item.studentId,
-                        status: 'ABSENT'
-                    }
-                } else {
-                    // Insert to Attendance Details
-                    // Insert lateStudentIds
-                    if (item.timeline.includes('LATE')) {
-                        lateStudentIds.push(item.studentId);
-                    }
-
-                    // Insert studentAttendIds
-                    studentAttendIds.push(item.studentId);
-
-
-                    // Sau khi Insert, nếu có student kiện, lúc này có thể
-                    // tồn tại student LIE trong column studentAttendIds,
-                    // cần update lại table 
-                    // Attendance Details
+                return {
+                    studentId: item.studentId,
+                    classGroupId: item.classGroupId,
+                    status
                 }
             })
 
-            console.log(">>> Check data", listClassGroupsVirtual)
+            await db.SpecialStudents.bulkCreate(listSpecialStudents);
+
+            return apiUtils.resFormat(0, "Create Special Students successful! ");
+        }
+
+        return apiUtils.resFormat(1, "Create Special Students failed! ");
+
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+
+const getSpecialStudentsByClassGroupId = async (classGroupId) => {
+    try {
+        let dataVirtual = await student_classGroupServices.getStudent_classGroupVirtualByClassGroupId(classGroupId);
+
+        let dataDeleteSpecialStudents = await deleteSpecialStudents(classGroupId);
+
+        if (dataDeleteSpecialStudents.EC === 0) {
+            let dataCreateSpecialStudents = await createSpecialStudents(dataVirtual.DT);
+
+            if (dataCreateSpecialStudents.EC === 0) {
+                let specialStudents = await db.SpecialStudents.findAll({
+                    where: { classGroupId },
+                    attributes: ['studentId', 'status', 'classGroupId'],
+                    raw: true,
+                    nest: true
+                })
+
+                let data;
+                if (specialStudents.length > 0) {
+                    data = await Promise.all(specialStudents.map(async (item) => {
+                        let studentSpecial = await studentServices.getStudentById(item.studentId);
+                        let student_classGroupSpecial = await student_classGroupServices.getStudent_ClassGroupByStudentIdAndClassGroupId(item.studentId, item.classGroupId);
+                        return {
+                            id: studentSpecial.DT.id,
+                            fullName: studentSpecial.DT.fullName,
+                            email: studentSpecial.DT.email,
+                            numberOfLies: student_classGroupSpecial.DT.numberOfLies,
+                            numberOfTimesBeingLate: student_classGroupSpecial.DT.numberOfTimesBeingLate,
+                            status: item.status,
+                            classGroupId: item.classGroupId,
+                        }
+                    }))
+                }
+
+                return apiUtils.resFormat(0, "Get Special Students successful! ", data);
+            }
+
+        }
+
+        return apiUtils.resFormat(1, "Get Special Students failed! ");
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+const deleteSpecialStudents = async (classGroupId) => {
+    try {
+
+        if (classGroupId) {
+            await db.SpecialStudents.destroy({
+                where: { classGroupId },
+            })
+
+            return apiUtils.resFormat(0, "Delete Special Students by classGroupId successful! ");
         }
 
 
-        return apiUtils.resFormat(1, "Create Special Students successful! ");
+        await db.SpecialStudents.destroy({
+            where: {},
+            truncate: true
+        })
+
+        return apiUtils.resFormat(0, "Delete Special Students successful! ");
     } catch (error) {
         console.log(error);
         return apiUtils.resFormat();
@@ -82,5 +137,5 @@ const createSpecialStudents = async (listClassGroupsVirtual) => {
 
 
 export default {
-    createSpecialStudents
+    createSpecialStudents, getSpecialStudentsByClassGroupId,
 }

@@ -2,6 +2,7 @@ import db from "../../models";
 import apiUtils from "../../utils/apiUtils";
 import { Op } from "sequelize";
 import classGroupServices from "../classGroup/classGroupServices";
+import studentServices from "../student/studentServices";
 
 const getAllStudent_ClassGroups = async () => {
     try {
@@ -139,23 +140,49 @@ const getStudent_ClassGroupsWithPagination = async (page, limit, time) => {
     }
 }
 
-const getStudent_ClassGroupByTeacherId = async (teacherId) => {
+// const getStudent_ClassGroupByTeacherId = async (teacherId) => {
+//     try {
+//         let data = await db.Student_ClassGroup.findAll({
+//             where: {
+//                 [Op.and]: [
+//                     { isDeleted: 0 },
+//                     { teacherId },
+//                 ]
+//             },
+//             attributes: ['id', 'name', 'description', 'majorId'],
+//             raw: true,
+//         })
+
+//         if (data.length > 0)
+//             return apiUtils.resFormat(0, "Get Student_ClassGroup by teacherId successful !", data);
+
+//         return apiUtils.resFormat(1, "Get Student_ClassGroup by teacherId failed !", data);
+//     } catch (error) {
+//         console.log(error);
+//         return apiUtils.resFormat();
+//     }
+// }
+
+const getStudent_ClassGroupByStudentIdAndClassGroupId = async (studentId, classGroupId) => {
     try {
-        let data = await db.Student_ClassGroup.findAll({
+        let data = await db.Student_ClassGroup.findOne({
             where: {
                 [Op.and]: [
-                    { isDeleted: 0 },
-                    { teacherId },
+                    { studentId },
+                    { classGroupId },
                 ]
             },
-            attributes: ['id', 'name', 'description', 'majorId'],
+            attributes: [
+                'id', 'studentId', 'classGroupId',
+                'numberOfAbsences', 'numberOfLies', 'numberOfTimesBeingLate'
+            ],
             raw: true,
         })
 
-        if (data.length > 0)
-            return apiUtils.resFormat(0, "Get Student_ClassGroup by teacherId successful !", data);
+        if (data)
+            return apiUtils.resFormat(0, "Get Student_ClassGroup by studentId and classGroupId successful !", data);
 
-        return apiUtils.resFormat(1, "Get Student_ClassGroup by teacherId failed !", data);
+        return apiUtils.resFormat(1, "Get Student_ClassGroup by studentId and classGroupId failed !", data);
     } catch (error) {
         console.log(error);
         return apiUtils.resFormat();
@@ -252,8 +279,120 @@ const deleteAStudent_ClassGroup = async (student_classGroup) => {
     }
 }
 
+const getStudent_classGroupVirtualByClassGroupId = async (classGroupId) => {
+    try {
+
+        let dataVirtual = await db.Student_ClassGroupVirtual.findAll({
+            where: { classGroupId },
+            attributes: ['studentId', 'classGroupId', 'timeline'],
+            raw: true,
+            nest: true
+        })
+
+
+        let listVirtual = [];
+        dataVirtual.forEach(item => {
+            item = {
+                ...item,
+                timeline: [item.timeline],
+            }
+
+            let match = listVirtual.find(r => r.studentId === item.studentId);
+            if (match) {
+                match.timeline = match.timeline.concat(item.timeline);
+            } else {
+                listVirtual.push(item);
+            }
+        });
+
+
+        if (listVirtual.length > 0)
+            return apiUtils.resFormat(0, `Get Student_ClassGroupVirtual by classGroupId successful !`, listVirtual);
+
+        return apiUtils.resFormat(1, `Get Student_ClassGroupVirtual by classGroupId failed !`, listVirtual);
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+const countOrLimitStudent_classGroupVirtualByClassGroupId = async (timeline, classGroupId, limit) => {
+    try {
+        let amountStudents = await db.Student_ClassGroupVirtual.count({
+            where: {
+                [Op.and]: [
+                    { classGroupId },
+                    { timeline },
+                ]
+            },
+        })
+
+
+        if (limit) {
+            if (amountStudents === limit) {
+                return apiUtils.resFormat(1, `Student_ClassGroupVirtual by classGroupId is full !`);
+            }
+
+            return apiUtils.resFormat(0, `Student_ClassGroupVirtual by classGroupId isn't full !`, amountStudents);
+        }
+
+        if (amountStudents)
+            return apiUtils.resFormat(0, `Count Student_ClassGroupVirtual by classGroupId successful !`, amountStudents);
+
+        return apiUtils.resFormat(1, `Count Student_ClassGroupVirtual by classGroupId failed !`);
+
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
+const updateNumberOf = async (status, studentId, classGroupId) => {
+    try {
+        let column;
+        if (status === 'ABSENT') {
+            column = 'numberOfAbsences';
+        } else if (status === 'LATE') {
+            column = 'numberOfTimesBeingLate';
+        } else if (status === 'LIE') {
+            column = 'numberOfLies';
+        } else {
+            return apiUtils.resFormat();
+        }
+
+        let dataStudent_classGroup = await getStudent_ClassGroupByStudentIdAndClassGroupId(studentId, classGroupId);
+        let numberOfBefore;
+
+        if (dataStudent_classGroup.EC === 0) {
+            numberOfBefore = +dataStudent_classGroup.DT[column];
+            numberOfBefore++;
+        }
+
+        await db.Student_ClassGroup.update({
+            [column]: numberOfBefore
+        }, {
+            where: {
+                [Op.and]: [
+                    { studentId },
+                    { classGroupId },
+                ]
+            }
+        })
+
+        return apiUtils.resFormat(0, "Update a student_classGroup successful !");
+    } catch (error) {
+        console.log(error);
+        return apiUtils.resFormat();
+    }
+}
+
 
 export default {
-    getStudent_ClassGroupByTeacherId, getStudent_ClassGroupsWithPagination, getAllStudent_ClassGroups,
-    createANewStudent_ClassGroup, createManyStudent_ClassGroups, updateAStudent_ClassGroup, deleteAStudent_ClassGroup
+    getStudent_ClassGroupByStudentIdAndClassGroupId,
+    getStudent_ClassGroupsWithPagination, getAllStudent_ClassGroups,
+    createANewStudent_ClassGroup, createManyStudent_ClassGroups,
+    updateAStudent_ClassGroup, deleteAStudent_ClassGroup,
+    getStudent_classGroupVirtualByClassGroupId, countOrLimitStudent_classGroupVirtualByClassGroupId,
+    updateNumberOf
+
 }

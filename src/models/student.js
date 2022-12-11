@@ -27,9 +27,6 @@ module.exports = (sequelize, DataTypes) => {
     isDeleted: DataTypes.INTEGER,
     majorId: DataTypes.STRING,
     schoolYearId: DataTypes.STRING,
-    numberOfAbsences: DataTypes.STRING,
-    numberOfTimesBeingLate: DataTypes.STRING,
-    numberOfLies: DataTypes.STRING,
     groupId: DataTypes.STRING,
   }, {
     sequelize,

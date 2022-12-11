@@ -27,15 +27,6 @@ module.exports = {
       schoolYearId: {
         type: Sequelize.STRING
       },
-      numberOfAbsences: {
-        type: Sequelize.STRING
-      },
-      numberOfTimesBeingLate: {
-        type: Sequelize.STRING
-      },
-      numberOfLies: {
-        type: Sequelize.STRING
-      },
       groupId: {
         type: Sequelize.STRING
       },

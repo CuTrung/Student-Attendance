@@ -9,6 +9,9 @@ import registrationGroupController from "../controllers/registrationGroupControl
 import loginController from "../controllers/loginController";
 import attendanceController from "../controllers/attendanceController";
 import schoolYearController from "../controllers/schoolYearController";
+import specialStudentsController from "../controllers/specialStudentsController";
+import attendanceDetailsController from "../controllers/attendanceDetailsController";
+
 
 const studentRoutes = (router) => {
     router.get("/api/students", studentController.getStudents);
@@ -72,6 +75,7 @@ const classGroupRoutes = (router) => {
     router.post("/api/classGroups", classGroupController.createManyClassGroups);
     router.patch("/api/classGroups", classGroupController.updateAClassGroup);
     router.delete("/api/classGroups", classGroupController.deleteAClassGroup);
+    router.get("/api/classGroups/:id/:limit/:isActive", classGroupController.updateLimitStudentsClassGroup);
 }
 
 const student_classGroupRoutes = (router) => {
@@ -80,6 +84,7 @@ const student_classGroupRoutes = (router) => {
     router.post("/api/student_classGroups", student_classGroupController.createManyStudent_ClassGroups);
     router.patch("/api/student_classGroups", student_classGroupController.updateAStudent_ClassGroup);
     router.delete("/api/student_classGroups", student_classGroupController.deleteAStudent_ClassGroup);
+
 }
 
 const manageRoutes = (router) => {
@@ -87,13 +92,18 @@ const manageRoutes = (router) => {
     router.post("/api/manage-classGroups", classGroupController.updateTimelineOrActiveAClassGroup);
 }
 
-const student_classGroupVirtualRoutes = (router) => {
-    router.post("/api/student_classGroupVirtual", classGroupController.getClassGroupVirtualByClassGroupId);
+const specialStudentsRoutes = (router) => {
+    router.post("/api/specialStudents", specialStudentsController.getSpecialStudentsByClassGroupId);
+}
+
+const attendanceDetailsRoutes = (router) => {
+    router.post("/api/attendanceDetails", attendanceDetailsController.createAttendanceDetails);
+    router.get("/api/attendanceDetails", attendanceDetailsController.getAttendanceDetailsByClassGroupId);
 }
 
 export default {
     studentRoutes, teacherRoutes, schoolYearRoutes, departmentRoutes,
     majorRoutes, subjectRoutes, registrationGroupRoutes, classGroupRoutes,
-    student_classGroupRoutes, student_classGroupVirtualRoutes,
-    loginRoutes, attendanceRoutes, manageRoutes
+    student_classGroupRoutes, specialStudentsRoutes,
+    loginRoutes, attendanceRoutes, manageRoutes, attendanceDetailsRoutes
 };

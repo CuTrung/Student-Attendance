@@ -15,6 +15,9 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
+      classGroupId: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -24,6 +27,12 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    // await queryInterface.addConstraint('SpecialStudents', {
+    //   fields: ['studentId', 'status'],
+    //   type: 'unique',
+    //   name: 'specialStudents_unique'
+    // });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('SpecialStudents');

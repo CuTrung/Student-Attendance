@@ -27,6 +27,12 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    // await queryInterface.addConstraint('Student_ClassGroupVirtual', {
+    //   fields: ['studentId', 'classGroupId', 'timeline'],
+    //   type: 'unique',
+    //   name: 'student_classGroupVirtual_unique'
+    // });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Student_ClassGroupVirtual');

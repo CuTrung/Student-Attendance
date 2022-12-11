@@ -15,6 +15,15 @@ module.exports = {
       classGroupId: {
         type: Sequelize.STRING
       },
+      numberOfAbsences: {
+        type: Sequelize.STRING
+      },
+      numberOfTimesBeingLate: {
+        type: Sequelize.STRING
+      },
+      numberOfLies: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
