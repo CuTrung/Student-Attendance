@@ -20,6 +20,7 @@ const verifyToken = (token) => {
     return decoded;
 }
 
+
 export default {
-    createToken, verifyToken
+    createToken, verifyToken,
 }

@@ -12,6 +12,7 @@ import schoolYearController from "../controllers/schoolYearController";
 import specialStudentsController from "../controllers/specialStudentsController";
 import attendanceDetailsController from "../controllers/attendanceDetailsController";
 
+import jwtMiddleware from "./middleware/jwtMiddleware";
 
 const studentRoutes = (router) => {
     router.get("/api/students", studentController.getStudents);

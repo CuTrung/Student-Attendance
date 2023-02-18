@@ -1,8 +1,10 @@
 import express from 'express';
 const router = express.Router();
 import apiRoutes from './apiRoutes';
+import jwtMiddleware from './middleware/jwtMiddleware';
 
 const initRoutes = (app) => {
+    // router.all("*", jwtMiddleware.checkUserJWT, jwtMiddleware.checkUserPermission);
 
     apiRoutes.studentRoutes(router);
     apiRoutes.teacherRoutes(router);

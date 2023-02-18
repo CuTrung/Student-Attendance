@@ -15,7 +15,31 @@ const delay = async (time = 500) => {
 
 }
 
+const convertPathToUrl = (path, method) => {
+    switch (method) {
+        case 'GET':
+            method = 'read';
+            break;
+        case 'POST':
+            method = 'create';
+            break;
+        case 'PATCH':
+            method = 'update';
+            break;
+        case 'DELETE':
+            method = 'delete';
+            break;
+        default:
+            break;
+    }
+
+
+    if (method)
+        return path.concat(`/${method}`).replace('/api', '');
+    return path.replace('/api', '');
+}
+
 
 export default {
-    resFormat, delay
+    resFormat, delay, convertPathToUrl
 }
