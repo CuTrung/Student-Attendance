@@ -1,0 +1,18 @@
+.listClassGroups {
+    display      : block;
+    min-height   : 75vh;
+    // min-width : 100vh;
+
+    td {
+        min-width: 11.5vw;
+
+        &:first-child {
+            min-width: 4.2vw;
+        }
+
+    }
+
+    .fullName {
+        min-width: 4vw;
+    }
+}

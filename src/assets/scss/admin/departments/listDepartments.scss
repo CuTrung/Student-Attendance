@@ -1,0 +1,17 @@
+.listDepartments {
+    display      : block;
+    min-height   : 75vh;
+    // min-width : 100vh;
+
+    td {
+        min-width: 21.3vw;
+
+        &:first-child {
+            min-width: 6.1vw;
+        }
+
+        &:last-child {
+            min-width: 12vw;
+        }
+    }
+}
